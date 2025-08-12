@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Resume Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>ATS Resume Analyzer</h1>
+
+        {% if error_message %}
+            <div class="error">{{ error_message }}</div>
+        {% endif %}
+        {% if info_message %}
+            <div class="info">{{ info_message }}</div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" action="{{ url_for('analyze_resume') }}" id="atsForm">
+            <div>
+                <label for="job_description">Job Description:</label>
+                <textarea id="job_description" name="job_description" required>{{ job_description_text or '' }}</textarea>
+            </div>
+            <div>
+                <label for="resume_pdf">Upload Resume (PDF only):</label>
+                <input type="file" id="resume_pdf" name="resume_pdf" accept=".pdf" required>
+            </div>
+
+            <h2>Choose Analysis Type:</h2>
+            <div class="button-group">
+                <button type="submit" name="analysis_type" value="evaluation">Tell Me About the Resume</button>
+                <button type="submit" name="analysis_type" value="improvement">How Can I Improve My Resume?</button>
+                <button type="submit" name="analysis_type" value="keywords">What Keywords Are Missing?</button>
+                <button type="submit" name="analysis_type" value="match_percentage">Calculate Percentage Match</button>
+            </div>
+        </form>
+
+        <div id="loader" class="loader"></div>
+
+        {% if analysis_result %}
+            <h2>Analysis Result:</h2>
+            <div class="results">
+                {{ analysis_result }}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Show loader on form submit
+        document.getElementById('atsForm').addEventListener('submit', function() {
+            // Basic validation
+            const jd = document.getElementById('job_description').value;
+            const resume = document.getElementById('resume_pdf').value;
+            if (jd.trim() === "" || resume.trim() === "") {
+                // Let HTML5 required attribute handle this, but good to have JS as well
+                return;
+            }
+            document.getElementById('loader').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
